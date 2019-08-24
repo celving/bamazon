@@ -21,8 +21,12 @@ connection.connect(function(err) {
 function showProducts() {
     connection.query("SELECT * FROM products", function(err, res) {
         if (err) throw err;
-        for (var i = 0; i < res.length; i++) {
-            console.log("ID: " + res[i].item_id + " || Item: " + res[i].product_name + " || Price: $" + res[i].price);
+        var productArray = [];
+        for (var j = 0; j < res.length; j++) {
+            productArray.push(res[j]);
+        };
+        for (var i = 0; i < productArray.length; i++) {
+            console.log("ID: " + productArray[i].item_id + " || Item: " + productArray[i].product_name + " || Price: $" + productArray[i].price);
         };
         
         promptUser();
@@ -36,12 +40,8 @@ function promptUser() {
             type: "input",
             message: "Please enter the ID of the item you'd like to purchase.",
             validate: function(num) {
-                if (NaN(num) === false && parseInt(num) <= 10 && parseInt(num) >= 1) {
-                    return true;
-                }
-                else {
-                    return false;
-                };
+                num = parseInt(num)
+                return (!isNaN(num) && num <= 10 && num >= 1)
             }
         },
         {
@@ -49,7 +49,7 @@ function promptUser() {
             type: "input",
             message: "How many of the selected item would you like to purchase?",
             validate: function(value) {
-                if (NaN(value) === false) {
+                if (isNaN(value) === false) {
                     return true;
                 }
                 else {
@@ -59,10 +59,14 @@ function promptUser() {
         }
     ])
     .then(function(answer) {
+        debugger
         var selectedId = parseInt(answer.id);
         var purchaseQuantity = parseInt(answer.quantity);
         console.log(selectedId);
         console.log(purchaseQuantity);
 
+    }).catch(function(err){
+        console.log(err.message)
+        debugger
     })
 }
