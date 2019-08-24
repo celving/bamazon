@@ -22,7 +22,7 @@ function showProducts() {
     connection.query("SELECT * FROM products", function(err, res) {
         if (err) throw err;
         for (var i = 0; i < res.length; i++) {
-            console.log("ID: " + res[i].item_id + " || Item: " + res[i].product_name + " || Price: $" + res[i].price);
+            console.log("ID: " + res[i].item_id + " || Item: " + res[i].product_name + " || Price: $" + res[i].price + " || Current stock: " + res[i].stock_quantity);
         };
         
         promptUser();
@@ -48,9 +48,9 @@ function showProducts() {
                 }
             ])
             .then(function(answer) {
-                var selectedId = parseInt(answer.id);
-                var itemPrice = parseInt(res[selectedId].price);
-                var stockQuantity = parseInt(res[selectedId].stock_quantity);
+                var selectedId = answer.id;
+                var itemPrice = parseInt(res[selectedId - 1].price);
+                var stockQuantity = parseInt(res[selectedId - 1].stock_quantity);
                 var purchaseQuantity = parseInt(answer.quantity);
                 var remainingQuantity = stockQuantity - purchaseQuantity;
                 if (stockQuantity >= purchaseQuantity) {
@@ -66,14 +66,15 @@ function showProducts() {
                         ],
                         function(error) {
                           if (error) throw err;
-                          console.log("Purchase complete! Your total cost comes to $" + itemPrice * purchaseQuantity);
+                          console.log("\nPurchase complete! Your total cost comes to $" + itemPrice * purchaseQuantity + "\n----------------------\n");
                           showProducts();
                         }
                       );
                 }
         
                 else {
-                    console.log("Sorry, we only have " + stockQuantity + " of that item in stock.")
+                    console.log("\nSorry, we only have " + stockQuantity + " of that item in stock.\n---------------------\n")
+                    showProducts();
                 };
         
             }).catch(function(err){
